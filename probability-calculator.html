@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability Calculator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-image: url('C:/Users/nyati/Downloads/vecteezy_minimalistic-desktop-background-high-quality_30659295.jpg');
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        input[type="text"] {
+            display: block;
+            margin: 15px auto;
+            padding: 10px;
+            font-size: 1.2em;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+
+        button:not(:disabled) {
+            background-color: blue;
+            color: white;
+        }
+
+        #linkedin-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        #linkedin-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #output {
+            color: red;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p id="output"></p>
+        <input type="text" id="probability" placeholder="Enter the probability">
+        <input type="text" id="trials" placeholder="Enter the number of trials">
+        <button id="enter" disabled>Enter</button>
+    </div>
+    <a href="https://www.linkedin.com/in/vivan-nyati-8269b4313/" id="linkedin-link">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" id="linkedin-button" alt="LinkedIn">
+    </a>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const probabilityInput = document.getElementById('probability');
+            const trialsInput = document.getElementById('trials');
+            const enterButton = document.getElementById('enter');
+            const output = document.getElementById('output');
+
+            function validateInputs() {
+                let probabilityValid = false;
+                let trialsValid = false;
+
+                // Clear error message if the field is empty
+                if (trialsInput.value.trim() === "") {
+                    output.textContent = "";
+                }
+
+                // Validate probability input
+                let p = probabilityInput.value.trim();
+                p = p.replace(/[^0-9./%]/g, ''); // Remove any invalid characters except numbers, '.', '/', '%'
+                probabilityInput.value = p;
+
+                if (p.includes('/')) {
+                    // Fraction format
+                    try {
+                        let [numerator, denominator] = p.split('/').map(Number);
+                        if (denominator !== 0) {
+                            p = numerator / denominator;
+                        } else {
+                            output.textContent = "Denominator cannot be zero.";
+                            p = null;
+                        }
+                    } catch (e) {
+                        p = null;
+                    }
+                } else if (p.includes('%')) {
+                    // Percentage format
+                    p = parseFloat(p) / 100;
+                } else {
+                    // Decimal format
+                    p = parseFloat(p);
+                }
+
+                if (typeof p === 'number' && !isNaN(p) && p >= 0 && p <= 1) {
+                    probabilityValid = true;
+                    if (!trialsInput.value) {
+                        output.textContent = ""; // Clear the output message until the other input is provided
+                    }
+                } else {
+                    output.textContent = "Probability must be between 0 and 1.";
+                }
+
+                // Validate trials input
+                const n = trialsInput.value.trim();
+                if (n === "") {
+                    trialsValid = false;
+                } else if (/^\d+$/.test(n)) {
+                    trialsValid = true;
+                } else {
+                    trialsValid = false;
+                    output.textContent = "Trials must be a positive integer.";
+                }
+
+                enterButton.disabled = !(probabilityValid && trialsValid);
+            }
+
+            probabilityInput.addEventListener('input', validateInputs);
+            trialsInput.addEventListener('input', validateInputs);
+
+            enterButton.addEventListener('click', function () {
+                let p = probabilityInput.value.trim();
+                if (p.includes('/')) {
+                    let [numerator, denominator] = p.split('/').map(Number);
+                    p = numerator / denominator;
+                } else if (p.includes('%')) {
+                    p = parseFloat(p) / 100;
+                } else {
+                    p = parseFloat(p);
+                }
+
+                const n = parseInt(trialsInput.value.trim(), 10);
+                const result = 1 - Math.pow(1 - p, n);
+                output.textContent = `The probability of the event happening at least once is approximately ${Math.round(result * 100)}%.`;
+            });
+        });
+    </script>
+</body>
+</html>
