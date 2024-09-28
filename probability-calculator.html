@@ -159,7 +159,7 @@
 
                 const n = parseInt(trialsInput.value.trim(), 10);
                 const result = 1 - Math.pow(1 - p, n);
-                output.textContent = `The probability of the event happening at least once is approximately ${Math.round(result * 100)}%.`;
+                output.textContent = `The probability of the event happening at least once is approximately ${(result * 100).toFixed(6)}%.`;
             });
         });
     </script>
